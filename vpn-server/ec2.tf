@@ -116,6 +116,34 @@ resource "aws_security_group" "vpn_server_sg" {
     "Name" = var.server_tag_value
   }
   description = "SG for VPN Server"
+
+  # Custom Ports
+  ingress {
+    cidr_blocks      = ["0.0.0.0/0"]
+    from_port        = 11979
+    ipv6_cidr_blocks = ["::/0"]
+    protocol         = "tcp"
+    to_port          = 11979
+  }
+
+  ingress {
+    cidr_blocks      = ["0.0.0.0/0"]
+    from_port        = 26542
+    ipv6_cidr_blocks = ["::/0"]
+    protocol         = "tcp"
+    to_port          = 26542
+  }
+
+  ingress {
+    cidr_blocks      = ["0.0.0.0/0"]
+    from_port        = 26542
+    ipv6_cidr_blocks = ["::/0"]
+    protocol         = "udp"
+    to_port          = 26542
+  }
+
+  # End of Custom ports
+
   ingress {
     cidr_blocks = ["0.0.0.0/0"]
     from_port   = 22

@@ -16,3 +16,10 @@ variable "configs_bucket_name" {
   description = "Storage Bucket for Config files"
   default     = "config-files-amk-152"
 }
+
+variable "subscription_emails" {
+  description = "Create Topic Subscriptions with these emails"
+  type        = list(string)
+  default     = ["aungmyatkyaw.kk@gmail.com"]
+}
+
