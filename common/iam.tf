@@ -25,6 +25,56 @@ resource "aws_iam_role" "standard_ec2_instance_role" {
   managed_policy_arns = [
     aws_iam_policy.codedeploy_s3_policy.arn,
     aws_iam_policy.ecr_pull_policy.arn,
+    aws_iam_policy.ip_assign_policy.arn,
+    data.aws_iam_policy.cloudwatch_server_policy.arn,
+    data.aws_iam_policy.ssm_instance_policy.arn
+  ]
+
+  inline_policy {
+    name = "CloudWatchAgentPutLogsRetention"
+    policy = jsonencode(
+      {
+        Statement = [
+          {
+            Action   = "logs:PutRetentionPolicy"
+            Effect   = "Allow"
+            Resource = "*"
+          },
+        ]
+        Version = "2012-10-17"
+      }
+    )
+  }
+}
+
+# Instance Profile for EC2 Staging Instance
+resource "aws_iam_instance_profile" "staging_ec2_instance_profile" {
+  name = "Role-For-Staging-Environment-EC2"
+  role = aws_iam_role.staging_ec2_instance_role.name
+}
+
+
+// Instance Role for Staging EC2 instances
+resource "aws_iam_role" "staging_ec2_instance_role" {
+  name = "Role-For-Staging-Environment-EC2"
+  assume_role_policy = jsonencode(
+    {
+      Statement = [
+        {
+          Action = "sts:AssumeRole"
+          Effect = "Allow"
+          Principal = {
+            Service = "ec2.amazonaws.com"
+          }
+        },
+      ]
+      Version = "2012-10-17"
+    }
+  )
+  description = "Allows Staging EC2 instances to call AWS services on your behalf."
+  managed_policy_arns = [
+    aws_iam_policy.codedeploy_s3_policy.arn,
+    aws_iam_policy.ecr_pull_policy.arn,
     aws_iam_policy.ecr_push_policy.arn,
     aws_iam_policy.ip_assign_policy.arn,
     data.aws_iam_policy.cloudwatch_server_policy.arn,
@@ -61,6 +111,8 @@ resource "aws_iam_policy" "codedeploy_s3_policy" {
           ]
           Effect = "Allow"
           Resource = [
+            aws_s3_bucket.codedeploy_bucket.arn,
+            format("%s%s", aws_s3_bucket.codedeploy_bucket.arn, "/*"),
             data.aws_s3_bucket.config_bucket.arn,
             format("%s%s", data.aws_s3_bucket.config_bucket.arn, "/*"),
           ]
@@ -69,6 +121,30 @@ resource "aws_iam_policy" "codedeploy_s3_policy" {
       Version = "2012-10-17"
     }
   )
+}
+
+// Role for CodeDeploy
+resource "aws_iam_role" "codedeploy_role" {
+  name        = "CodeDeployRole"
+  description = "Allows CodeDeploy to call AWS services such as Auto Scaling on your behalf."
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "codedeploy.amazonaws.com"
+        }
+      }
+    ]
+  })
+  managed_policy_arns = [data.aws_iam_policy.default_codedeploy_policy.arn]
+}
+
+# Get the policy by name
+data "aws_iam_policy" "default_codedeploy_policy" {
+  name = "AWSCodeDeployRole"
 }
 
 // Policy for ECR image pull

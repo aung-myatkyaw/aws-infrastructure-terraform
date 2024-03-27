@@ -6,14 +6,14 @@ terraform {
     region         = "ap-southeast-1"
     dynamodb_table = "terraform_state_locks"
     encrypt        = true
-    profile        = "yinko"
+    profile        = "amk"
   }
 }
 
 // Define Provider and Region
 provider "aws" {
   region  = "ap-south-1"
-  profile = "yinko"
+  profile = "amk"
   alias   = "mumbai"
   default_tags {
     tags = {
@@ -25,7 +25,7 @@ provider "aws" {
 // Define Provider and Region
 provider "aws" {
   region  = "ap-southeast-1"
-  profile = "yinko"
+  profile = "amk"
   default_tags {
     tags = {
       Region = "Singapore"

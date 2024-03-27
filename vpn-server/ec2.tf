@@ -105,7 +105,7 @@ resource "aws_eip" "vpn_server_ip" {
   tags = {
     "Name" = var.server_tag_value
   }
-  vpc = true
+  domain = "vpc"
 }
 
 # Security Group

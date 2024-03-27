@@ -17,6 +17,11 @@ variable "configs_bucket_name" {
   default     = "config-files-amk-152"
 }
 
+variable "codedeploy_bucket_name" {
+  description = "Bucket for CodeDeploy"
+  default     = "codedeploy-artifacts-storage-amk-{{REGION_NAME}}"
+}
+
 variable "subscription_emails" {
   description = "Create Topic Subscriptions with these emails"
   type        = list(string)
