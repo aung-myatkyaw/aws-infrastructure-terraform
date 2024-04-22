@@ -1,7 +1,7 @@
 // Notification Topic
 resource "aws_sns_topic" "notification_topic" {
   provider = aws.mumbai
-  name     = "dexon-sns-topic-${data.aws_region.mumbai.name}"
+  name     = "mumbai-sns-topic-${data.aws_region.mumbai.name}"
 }
 
 // Notification Subscriptions
